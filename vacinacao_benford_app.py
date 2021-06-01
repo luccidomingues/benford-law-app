@@ -1,8 +1,3 @@
-#Célula para montar o drive Google neste notebook. Será pedido autorização para fazer a conexão. 
-# from google.colab import drive
-# drive.mount('/content/drive')
-
-# import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -11,40 +6,21 @@ import base64
 import streamlit as st
 
 
-
 st.title('Benford´s law App')
 
 st.markdown("""
 Este app apresenta a Benford´s law aplicada em datasets do portal openDataSUS referente a vacinação do Covid-19!
 * **Data source:** https://opendatasus.saude.gov.br/dataset/covid-19-vacinacao
 """)
-
-
 st.sidebar.header('Atributos de Entrada')
-
 st.sidebar.selectbox('Estados',('Acre',' Alagoas',' Amapá',' Amazonas',' Bahia',' Ceará',' Distrito Federal',' Espírito Santo',' Goiás',' Maranhão',' Mato Grosso',' Mato Grosso do Sul',' Minas Gerais',' Paraná',' Paraíba',' Pará',' Pernambuco',' Piauí',' Rio de Janeiro',' Rio Grande do Norte',' Rio Grande do Sul',' Rondonia',' Roraima',' Santa Catarina',' Sergipe',' São Paulo',' Tocantins'))
 
 
-
-# def load_data():
-#     url = 'https://blog.toroinvestimentos.com.br/empresas-listadas-b3-bovespa'
-#     html = pd.read_html(url, header = 0)
-#     df = html[1]
-#     return df
-
-# df = load_data()
-
-
-#link para código de todos municípios brasileiros 
-
 url = "https://raw.githubusercontent.com/kelvins/Municipios-Brasileiros/main/csv/municipios.csv"
-
-
 
 # dataset com os códigos IBGE para os municípios brasileiros
 dfloc = pd.read_csv(url, 
                    dtype={"codigo_ibge":"object"})
-
 
 
 def tratacodigo(x):
@@ -52,7 +28,6 @@ def tratacodigo(x):
 
 dfloc.codigo_ibge = dfloc.codigo_ibge.apply(tratacodigo)
 dfloc = dfloc.set_index("codigo_ibge")
-
 
 UF = "AC" #Definindo Estado. Mudar aqui o valor para obter dataset de outro estado
 
@@ -83,29 +58,6 @@ df = pd.read_csv(f"https://s3-sa-east-1.amazonaws.com/ckan.saude.gov.br/PNI/vaci
                  parse_dates = colunadatas, 
                  dtype={"estabelecimento_municipio_codigo":"object"},
                  delimiter=";")
-
-
-
-# Luciano
-# st.header('Display Companies in Selected Sector')
-# st.write('Data Dimension: ' + str(df_selected_sector.shape[0]) + ' rows and ' + str(df_selected_sector.shape[1]) + ' columns.')
-
-# st.dataframe(df_selected_sector)
-
-
-
-
-
-# st.header('Informação do Estado Selecionado')
-# st.write('Data Dimension: ' + str(df.shape[0]) + ' rows and ' + str(df.shape[1]) + ' columns.')
-
-# st.dataframe(df)
-
-
-
-
-
-
 
 municipios = [i for i in df.estabelecimento_municipio_codigo.unique()] #obtendo os códigos de todos os municípios do estado UF
 dftemp = df.groupby(['estabelecimento_municipio_codigo','vacina_dataaplicacao'],as_index=False).agg({'document_id':'count'}).sort_values(by="vacina_dataaplicacao")
@@ -138,7 +90,7 @@ distdf = distdf.rename(index={0:"Dist_Benford"}) #Formatação final dos nomes d
 distdf = distdf.dropna() #retirando linhas com valores faltantes 
 distdf.index.name = "codigo_ibge"
 
-
+distdfT = distdf.T
 
 st.header('Aplicação na UF selecionada')
 
@@ -155,74 +107,9 @@ if st.button('Show Analysis'):
         return href
 
     st.markdown(filedownload(distdf.join(dfloc["nome"])[['nome', 1, 2, 3, 4, 5, 6, 7, 8, 9]]), unsafe_allow_html=True)
-    
-    if st.button('Show LinePlot'):
-        st.header('Benford LinePlot')
-        plt.figure(figsize=(10,10)); #Gráfico mostrando tendência geral de acompanhar a curva Benford
-        sns.lineplot(data=distdf);
-        plt.legend("")
-        plt.title(f"Distribuição Benford {UF}")
-        plt.figure(figsize=(10,10)) #Exemplo de município destoando da curva (Devido população pequena?)
-#         sns.lineplot(data=distdf.T[["120030","Dist_Benford"]])
 
-
-
-# from scipy.stats import chisquare #importando biblioteca para teste quiquadrado
-
-# chisquare(f_obs=distdf.iloc[0:-1, :], f_exp=distdf.iloc[-1,:], axis=1) #aplicação teste Quiquadrado
-
-
-
-# distdf.to_csv(f"/content/drive/MyDrive/dfBen{UF}.csv") #o arquivo só será salvo no Drive se o disco estiver montado
-# distdf.join(dfloc["nome"])[['nome', 1, 2, 3, 4, 5, 6, 7, 8, 9]] #exemplo de Dataset com código e nome dos municípios
-
-
-
-
-
-
-# Luciano
-# st.header('Aplicação da Lei pelo estado selecionado')
-# st.write('Data Dimension: ' + str(distdf.shape[0]) + ' rows and ' + str(distdf.shape[1]) + ' columns.')
-
-# st.dataframe(distdf)
-
-
-# st.header('Aplicação da Lei pelo estado selecionado')
-# st.write('Data Dimension: ' + str(distdf.join(dfloc["nome"])[['nome', 1, 2, 3, 4, 5, 6, 7, 8, 9]].shape[0]) + ' rows and ' + str(distdf.join(dfloc["nome"])[['nome', 1, 2, 3, 4, 5, 6, 7, 8, 9]].shape[1]) + ' columns.')
-
-# st.dataframe(distdf.join(dfloc["nome"])[['nome', 1, 2, 3, 4, 5, 6, 7, 8, 9]])
-
-
-
-
-
-
-
-
-
-
-    
-# plt.figure(figsize=(10,10)); #Gráfico mostrando tendência geral de acompanhar a curva Benford
-
-
-# Comentario anterior por Luciano
-# sns.lineplot(data=distdf.T);
-
-# plt.legend("")
-# plt.title(f"Distribuição Benford {UF}")
-
-
-# plt.savefig(f"/content/drive/MyDrive/{UF}Benford.png")
-
-
-
-# plt.figure(figsize=(10,10)) #Exemplo de município destoando da curva (Devido população pequena?)
-# sns.lineplot(data=distdf.T[["120030","Dist_Benford"]])
-
-
-
-
-# from scipy.stats import chisquare #importando biblioteca para teste quiquadrado
-
-# chisquare(f_obs=distdf.iloc[0:-1, :], f_exp=distdf.iloc[-1,:], axis=1) #aplicação teste Quiquadrado
+if st.button('Show LinePlot'):
+        st.header('Benford LinePlot')        
+        sns.lineplot(data=distdfT, dashes=False);
+        st.set_option('deprecation.showPyplotGlobalUse', False)
+        st.pyplot()
