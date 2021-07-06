@@ -29,7 +29,7 @@ def tratacodigo(x):
 dfloc.codigo_ibge = dfloc.codigo_ibge.apply(tratacodigo)
 dfloc = dfloc.set_index("codigo_ibge")
 
-UF = "AC" #Definindo Estado. Mudar aqui o valor para obter dataset de outro estado
+UF = "SP" #Definindo Estado. Mudar aqui o valor para obter dataset de outro estado
 
 #colunas disponíveis nos arquivos de vacinação
 colunas = ['document_id', 'paciente_id', 'paciente_idade',
